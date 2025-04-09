@@ -71,6 +71,59 @@ public class FibCalculatorJNI {
         return results;
     }
 
+    public static List<Long> runWithVirtualThreads(int numWorkers, int count, int n, CalculationTask task) {
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            List<Future<Long>> futures = new ArrayList<>(numWorkers);
+
+            for (int i = 0; i < numWorkers; i++) {
+                Future<Long> future = executor.submit(() -> task.calculate(count, n));
+                futures.add(future);
+            }
+
+            List<Long> results = new ArrayList<>(numWorkers);
+            for (Future<Long> future : futures) {
+                try {
+                    results.add(future.get());
+                } catch (InterruptedException | ExecutionException e) {
+                    System.err.println("Error executing task (Virtual Thread): " + e);
+                    results.add(-1L);
+                }
+            }
+            return results;
+        }
+    }
+
+    public static List<Long> runWithManualVirtualThreads(int numWorkers, int count, int n, CalculationTask task) {
+        List<FutureTask<Long>> futureTasks = new ArrayList<>(numWorkers);
+        List<Thread> threads = new ArrayList<>(numWorkers);
+
+        for (int i = 0; i < numWorkers; i++) {
+            final int currentCount = count;
+            final int currentN = n;
+            Callable<Long> callable = () -> task.calculate(currentCount, currentN);
+
+            FutureTask<Long> futureTask = new FutureTask<>(callable);
+            futureTasks.add(futureTask);
+
+            Thread virtualThread = Thread.startVirtualThread(futureTask);
+            threads.add(virtualThread);
+        }
+
+        List<Long> results = new ArrayList<>(numWorkers);
+        for (FutureTask<Long> ft : futureTasks) {
+            try {
+                results.add(ft.get());
+            } catch (ExecutionException e) {
+                results.add(-1L);
+            } catch (InterruptedException e) {
+                 results.add(-1L);
+                 Thread.currentThread().interrupt();
+            }
+        }
+
+        return results;
+    }
+
     public static long sumResults(List<Long> results) {
         long total = 0;
         for (long r : results) {
@@ -110,7 +163,7 @@ public class FibCalculatorJNI {
 
 
         long startTimeJava = System.nanoTime();
-        List<Long> resultsJava = runWithThreads(numThreads, iterationsPerThread, fibN,
+        List<Long> resultsJava = runWithVirtualThreads(numThreads, iterationsPerThread, fibN,
                                         FibCalculatorJNI::calculateSumOfFibsJava);
         long durationJava = System.nanoTime() - startTimeJava;
         System.out.printf("Java time: \t\t%d ms%n", TimeUnit.NANOSECONDS.toMillis(durationJava));

@@ -1,9 +1,10 @@
-# CGO-JNI POC
+# CGO-JNI-JNA POC
 
 1. [prepare](#prepare-env)
 2. [build](#build)
 3. [run](#run)
-4. [java](#java)
+4. [java-jni](#java-jni)
+5. [java-jna](#java-jna)
 
 ## prepare env
 
@@ -43,7 +44,12 @@ chmod +x ./build.sh
 ./fib_main
 ```
 
-## java
+## java jni
 ```shell
 chmod +x build_jni.sh && ./build_jni.sh
+```
+
+## java jna
+```shell
+chmod +x build_jna.sh && ./build_jna.sh
 ```

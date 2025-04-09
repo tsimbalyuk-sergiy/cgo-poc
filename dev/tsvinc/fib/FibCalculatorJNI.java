@@ -159,7 +159,9 @@ public class FibCalculatorJNI {
 
         try {
             Thread.sleep(500);
-        } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
 
         long startTimeJava = System.nanoTime();

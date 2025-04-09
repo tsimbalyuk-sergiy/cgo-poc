@@ -1,5 +1,9 @@
 # CGO POC
 
+1. [prepare](#prepare-env)
+2. [build](#build)
+3. [run](#run)
+
 ## prepare env
 
 ### ubuntu
@@ -20,9 +24,20 @@ sudo dnf install golang
 xcode-select --install
 ```
 
-## check env
+check env
 verify both have some yield
 ```shell
 gcc --version
 go version
+```
+
+## build
+```shell
+chmod +x ./build.sh
+./build.sh
+```
+
+## run
+```shell
+./fib_main
 ```

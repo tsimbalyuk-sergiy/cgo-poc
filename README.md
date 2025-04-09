@@ -1,8 +1,9 @@
-# CGO POC
+# CGO-JNI POC
 
 1. [prepare](#prepare-env)
 2. [build](#build)
 3. [run](#run)
+4. [java](#java)
 
 ## prepare env
 
@@ -40,4 +41,9 @@ chmod +x ./build.sh
 ## run
 ```shell
 ./fib_main
+```
+
+## java
+```shell
+chmod +x build_jni.sh && ./build_jni.sh
 ```
